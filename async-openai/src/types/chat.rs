@@ -763,7 +763,7 @@ pub struct ChatCompletionStreamResponseDelta {
 pub struct ChatChoiceStream {
     /// The index of the choice in the list of choices.
     pub index: u32,
-    pub delta: ChatCompletionStreamResponseDelta,
+    pub delta: Option<ChatCompletionStreamResponseDelta>,
     pub finish_reason: Option<FinishReason>,
     /// Log probability information for the choice.
     pub logprobs: Option<ChatChoiceLogprobs>,
