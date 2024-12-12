@@ -25,6 +25,9 @@ pub enum OpenAIError {
     /// or when builder fails to build request before making API call
     #[error("invalid args: {0}")]
     InvalidArgument(String),
+    /// Azure ContentFilter
+    #[error("Azure ContentFilter: {0}")]
+    AzureContentFilter(String),
 }
 
 /// OpenAI API returns error object on failure

@@ -2,7 +2,7 @@ use std::pin::Pin;
 
 use bytes::Bytes;
 use futures::{stream::StreamExt, Stream};
-use reqwest_eventsource::{Event, EventSource, RequestBuilderExt};
+use reqwest_eventsource::{Error, Event, EventSource, RequestBuilderExt};
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
@@ -458,9 +458,21 @@ where
         while let Some(ev) = event_source.next().await {
             match ev {
                 Err(e) => {
-                    if let Err(_e) = tx.send(Err(OpenAIError::StreamError(e.to_string()))) {
-                        // rx dropped
-                        break;
+                    match e {
+                        Error::InvalidStatusCode(_, resp) => {
+                            if let Err(_e) = tx.send(Err(OpenAIError::AzureContentFilter(
+                                resp.text().await.unwrap_or("".to_string()),
+                            ))) {
+                                // rx dropped
+                                break;
+                            }
+                        }
+                        _ => {
+                            if let Err(_e) = tx.send(Err(OpenAIError::StreamError(e.to_string()))) {
+                                // rx dropped
+                                break;
+                            }
+                        }
                     }
                 }
                 Ok(event) => match event {
