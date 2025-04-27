@@ -54,7 +54,7 @@ pub(crate) async fn create_file_part(
 
     let file_part = reqwest::multipart::Part::stream(stream)
         .file_name(file_name)
-        .mime_str("application/octet-stream")
+        .mime_str("image/png")
         .unwrap();
 
     Ok(file_part)
